@@ -1,17 +1,5 @@
 #cloud-config
 autoinstall:
-  identity:
-    hostname: ${user.hostname}  # User will input their own hostname
-    username: ${user.username}  # User will input their own username
-    password: $6$5lpwCLs$2EB3ltav3j/fdeNQtyU91j6lp8HVJ59aWtZHQU2qr.hjm5gha2x9g6eWvS4rVYFWu7Tth40IQfPqW/u10L0Vo0
-  network:
-    version: 2
-    renderer: NetworkManager
-  refresh-installer:
-    update: no
-  keyboard:
-    layout: gb
-  locale: en_GB.UTF-8
   storage:
     layout:
       name: lvm
