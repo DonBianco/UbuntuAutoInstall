@@ -1,11 +1,8 @@
 #cloud-config
 autoinstall:
   version: 1
-  identity:
-    username: ''
-    password: "$6$5lpwCLs$2EB3ltav3j/fdeNQtyU91j6lp8HVJ59aWtZHQU2qr.hjm5gha2x9g6eWvS4rVYFWu7Tth40IQfPqW/u10L0Vo0"
-    hostname: ''
-    interactive: true
+  interactive:
+   -identity:
   storage:
     layout:
       name: lvm
