@@ -1,10 +1,7 @@
 #cloud-config
 autoinstall:
   identity:
-    hostname: IB-UBUNTU-L
-    username: infobip
     password: $6$5lpwCLs$2EB3ltav3j/fdeNQtyU91j6lp8HVJ59aWtZHQU2qr.hjm5gha2x9g6eWvS4rVYFWu7Tth40IQfPqW/u10L0Vo0
-    realname: Ubuntu user
   network:
     version: 2
     renderer: NetworkManager
@@ -16,20 +13,11 @@ autoinstall:
     variant: ''
   locale: en_GB.UTF-8
   storage:
-    config:
-      - { ptable: gpt, size: largest, wipe: superblock, preserve: false, name: '', grub_device: false, type: disk, id: disk-vda }
-      - { device: disk-vda, size: 50M, wipe: superblock, flag: boot, number: 1, preserve: false, grub_device: true, type: partition, id: partition-efi }
-      - { fstype: fat32, volume: partition-efi, preserve: false, type: format, id: format-efi }
-      - { device: disk-vda, size: 10G, wipe: superblock, flag: '', number: 2, preserve: false, grub_device: false, type: partition, id: partition-boot }
-      - { fstype: ext4, volume: partition-boot, preserve: false, type: format, id: format-boot }
-      - { device: disk-vda, size: -1, wipe: superblock, flag: '', number: 3, preserve: false, grub_device: false, type: partition, id: partition-root }
-      - { volume: partition-root, key: 'ubuntu', preserve: false, type: dm_crypt, id: dm_crypt-0 }
-      - { name: ubuntu-vg, devices: [ dm_crypt-0 ], preserve: false, type: lvm_volgroup, id: lvm_volgroup-0 }
-      - { name: ubuntu-lv, volgroup: lvm_volgroup-0, size: -1, wipe: superblock, preserve: false, type: lvm_partition, id: lvm_partition-0 }
-      - { fstype: ext4, volume: lvm_partition-0, preserve: false, type: format, id: format-root }
-      - { path: /, device: format-root, type: mount, id: mount-2 }
-      - { path: /boot, device: format-boot, type: mount, id: mount-1 }
-      - { path: /boot/efi, device: format-efi, type: mount, id: mount-0 }
+    layout:
+      name: lvm
+      policy: all
+      password: "301097"
+
     swap:
       swap: 4G
     grub:
@@ -38,30 +26,8 @@ autoinstall:
     install: true
 
   early-commands:
-    - mount > /mount-early.txt
-    # Removed wifi
-    - bash -c 'echo "Please enter desired hostname:"; read HOSTNAME; sed -i "s/PLACEHOLDER-HOSTNAME/$HOSTNAME/" /var/lib/cloud/instances/nocloud/user-data.txt'
-    - bash -c 'echo "Please enter desired username:"; read USERNAME; sed -i "s/ubuntu/$USERNAME/" /var/lib/cloud/instances/nocloud/user-data.txt'
-    - bash -c 'echo "Please enter desired user full name:"; read realname; sed -i "s/ubuntu/$realname/" /var/lib/cloud/instances/nocloud/user-data.txt'
-    # Automatically set LVM passphrase (set passphrase to 301097)
-    - echo "301097" | cryptsetup luksFormat /dev/vda3 --type luks2 --batch-mode
-    - echo "301097" | cryptsetup open /dev/vda3 dm-crypt-0 --type luks2 --batch-mode
-    - echo "LVM passphrase set successfully" >> /mount-early.txt
 
   late-commands:
-    - if [ -z "$(dig +short gb.archive.ubuntu.com)" ]; then echo OFFLINE; else echo ONLINE; fi
-    - mkdir /target/cdrom
-    - mount --bind /cdrom /target/cdrom
-    - curtin in-target --target=/target -- sed -i 's/GRUB_CMDLINE_LINUX_DEFAULT=""/GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"/' /etc/default/grub
-    - curtin in-target --target=/target -- update-grub
-    - curtin in-target --target=/target -- /cdrom/setup-secureboot-mok.sh
-    - umount /target/cdrom
-    - rm -r /target/cdrom
-    - mv /target/etc/apt/sources.list.curtin.old /target/etc/apt/sources.list
-    - mount > /target/mount-late.txt
-    - mv /mount-early.txt /target/
-    - tpm2_pcrread > /target/late-tpm2_pcrread.txt || true
-    - tpm2_eventlog /sys/kernel/security/tpm0/binary_bios_measurements > /target/late-tpm2_eventlog.txt || true
     # Perform wget to fetch the script and execute enroll.sh
     - curtin in-target --target=/target -- wget -O /home/ubuntu/script.sh https://landscape.infobip.com/static/deploy/enroll.sh
     - curtin in-target --target=/target -- bash /home/ubuntu/enroll.sh
