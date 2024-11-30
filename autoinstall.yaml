@@ -20,6 +20,7 @@ autoinstall:
     - curtin in-target --target=/target -- apt-get update  # Ensure the environment is ready
     - curtin in-target --target=/target -- apt-get install -y wget  # Ensure wget is installed
     - curtin in-target --target=/target -- mkdir -p /home/ubuntu  # Ensure directory exists
-    - curtin in-target --target=/target -- wget -O /home/ubuntu/script.sh https://landscape.infobip.com/static/deploy/enroll.sh
-    - curtin in-target --target=/target -- chmod +x /home/ubuntu/script.sh  # Make the script executable
-    - curtin in-target --target=/target -- bash /home/ubuntu/script.sh
+    - curtin in-target --target=/target -- wget -O /home/ubuntu/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
+    - curtin in-target --target=/target -- chmod +x /home/ubuntu/enroll.sh  # Make the script executable
+  runcmd:
+    - ["/bin/bash", "/home/ubuntu/enroll.sh"]  # Run the script during first boot
