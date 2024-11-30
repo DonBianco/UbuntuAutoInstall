@@ -1,5 +1,11 @@
 #cloud-config
 autoinstall:
+  version: 1
+  identity:
+    username: ''
+    password: "$6$5lpwCLs$2EB3ltav3j/fdeNQtyU91j6lp8HVJ59aWtZHQU2qr.hjm5gha2x9g6eWvS4rVYFWu7Tth40IQfPqW/u10L0Vo0"
+    hostname: ''
+    interactive: true
   storage:
     layout:
       name: lvm
@@ -14,6 +20,9 @@ autoinstall:
     install: true
   early-commands: []
   late-commands:
+    - curtin in-target --target=/target -- apt-get update  # Ensure the environment is ready
+    - curtin in-target --target=/target -- apt-get install -y wget  # Ensure wget is installed
+    - curtin in-target --target=/target -- mkdir -p /home/ubuntu  # Ensure directory exists
     - curtin in-target --target=/target -- wget -O /home/ubuntu/script.sh https://landscape.infobip.com/static/deploy/enroll.sh
-    - curtin in-target --target=/target -- bash /home/ubuntu/enroll.sh
-  version: 1
+    - curtin in-target --target=/target -- chmod +x /home/ubuntu/script.sh  # Make the script executable
+    - curtin in-target --target=/target -- bash /home/ubuntu/script.sh
