@@ -9,26 +9,20 @@ autoinstall:
     update: no
   keyboard:
     layout: gb
-    toggle: null
-    variant: ''
   locale: en_GB.UTF-8
   storage:
     layout:
       name: lvm
       policy: all
       password: "301097"
-
     swap:
       swap: 4G
     grub:
       reorder_uefi: False
   drivers:
     install: true
-
-  early-commands:
-
+  early-commands: []
   late-commands:
-    # Perform wget to fetch the script and execute enroll.sh
     - curtin in-target --target=/target -- wget -O /home/ubuntu/script.sh https://landscape.infobip.com/static/deploy/enroll.sh
     - curtin in-target --target=/target -- bash /home/ubuntu/enroll.sh
   version: 1
