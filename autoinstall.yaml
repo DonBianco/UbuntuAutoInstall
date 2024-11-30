@@ -23,4 +23,4 @@ autoinstall:
     - curtin in-target --target=/target -- wget -O /home/ubuntu/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
     - curtin in-target --target=/target -- chmod +x /home/ubuntu/enroll.sh  # Make the script executable
   runcmd:
-    - ["/bin/bash", "/home/ubuntu/enroll.sh"]  # Run the script during first boot
+    - sudo bash /home/ubuntu/enroll.sh
