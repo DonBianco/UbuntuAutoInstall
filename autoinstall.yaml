@@ -14,7 +14,8 @@ autoinstall:
     layout:
       name: lvm
       policy: all
-      password: "301097"
+      encryption: luks  # Enables disk encryption
+      password: "301097"  # Passphrase for encryption
     swap:
       swap: 4G
     grub:
