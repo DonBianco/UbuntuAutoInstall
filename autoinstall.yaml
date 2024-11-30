@@ -3,7 +3,6 @@ autoinstall:
   identity:
     hostname: ${user.hostname}  # User will input their own hostname
     username: ${user.username}  # User will input their own username
-  user-data:
     password: $6$5lpwCLs$2EB3ltav3j/fdeNQtyU91j6lp8HVJ59aWtZHQU2qr.hjm5gha2x9g6eWvS4rVYFWu7Tth40IQfPqW/u10L0Vo0
   network:
     version: 2
