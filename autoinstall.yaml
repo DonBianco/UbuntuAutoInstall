@@ -1,26 +1,114 @@
 #cloud-config
 autoinstall:
-  version: 1
-  interactive:
-   -identity:
+  refresh-installer:
+    update: true
+    channel: latest/stable
+  apt:
+    disable_components: []
+    fallback: abort
+    geoip: false
+    mirror-selection:
+      primary:
+      - country-mirror
+      - arches: &id001
+        - amd64
+        - i386
+        uri: http://archive.ubuntu.com/ubuntu/
+      - arches: &id002
+        - s390x
+        - arm64
+        - armhf
+        - powerpc
+        - ppc64el
+        - riscv64
+        uri: http://ports.ubuntu.com/ubuntu-ports
+    preserve_sources_list: false
+    security:
+    - arches: *id001
+      uri: http://security.ubuntu.com/ubuntu/
+    - arches: *id002
+      uri: http://ports.ubuntu.com/ubuntu-ports
+  codecs:
+    install: true
+  drivers:
+    install: true
+  kernel:
+    package: linux-generic-hwe-24.04
+  keyboard:
+    layout: us
+    variant: ''
+  locale: en_US.UTF-8
+  network:
+    version: 2
+    ethernets:
+      ens33:
+        match:
+          name: "en*"
+        dhcp4: true
+      eth1:
+        match:
+          name: "eth*"
+        dhcp4: true
+  oem:
+    install: auto
+  source:
+    id: ubuntu-desktop-minimal
   storage:
     layout:
       name: lvm
-      policy: all
-      encryption: luks  # Enables disk encryption
-      password: "301097"  # Passphrase for encryption
+      sizing-policy: all
+      encryption: luks
+      password: "301097"
     swap:
       swap: 4G
     grub:
       reorder_uefi: False
-  drivers:
-    install: true
-  early-commands: []
+  identity:
+    realname: "Salazar Slytherin"
+    hostname: "sslytherin"
+    username: "IB-SSLYTHERIN-L"
+    password: "$6$jMIpAD1dGkm6sqfJ$HF6uWZp3lbYMjyI3jWUE1j51R9sqCkX8tjrp3xut2AWs3r2Ou9JGyZu1Xr7D3VF3B4X2gYCfjQatKoxAbDGSu0"
+  timezone: Europe/Sarajevo
+  updates: security
   late-commands:
-    - curtin in-target --target=/target -- apt-get update  # Ensure the environment is ready
-    - curtin in-target --target=/target -- apt-get install -y wget  # Ensure wget is installed
-    - curtin in-target --target=/target -- mkdir -p /home/ubuntu  # Ensure directory exists
-    - curtin in-target --target=/target -- wget -O /home/ubuntu/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
-    - curtin in-target --target=/target -- chmod +x /home/ubuntu/enroll.sh  # Make the script executable
+    - curtin in-target --target=/target -- apt-get update
+    - curtin in-target --target=/target -- apt-get install -y wget
+    - curtin in-target --target=/target -- mkdir -p /home/sslytherin/scripts
+    - curtin in-target --target=/target -- tee /home/sslytherin/scripts/setup_user.sh > /dev/null <<EOF
+      #!/bin/bash
+      echo "================================="
+      echo " Autoinstall USER Configuration!"
+      echo "================================="
+
+      # Traži od korisnika unos podataka
+      read -p "Enter user full name for example Salazar Slytherin: " FULLNAME
+      read -p "Enter username for example sslytherin: " USERNAME
+      read -p "Enter hostname please use Infobip standardization for example IB-SSLYTHERIN-L: " HOSTNAME
+
+      # Postavlja hostname
+      echo "\$HOSTNAME" > /etc/hostname
+      hostnamectl set-hostname "\$HOSTNAME"
+
+      # Kreira novog korisnika
+      adduser --gecos "\$FULLNAME" --disabled-password "\$USERNAME"
+      echo "\$USERNAME ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers.d/\$USERNAME
+
+      # Postavljanje lozinke za novog korisnika
+      echo "\$USERNAME:Ovojetest12!" | chpasswd
+
+      # Premješta tempuser folder u novog korisnika
+      mv /home/tempuser /home/\$USERNAME
+      chown -R \$USERNAME:\$USERNAME /home/\$USERNAME
+
+      # Postavljanje lozinke za tempuser
+      echo "tempuser:Ovojetest12!" | chpasswd
+
+      # Restart sistema da primijeni promjene
+      echo "Setup completed, rebooting system Ciao!..."
+      sleep 3
+      reboot
+      EOF
+    - curtin in-target --target=/target -- chmod +x /home/sslytherin/scripts/setup_user.sh
   runcmd:
-    - sudo bash /home/ubuntu/enroll.sh
+    - sudo bash /home/sslytherin/scripts/setup_user.sh
+  version: 1
