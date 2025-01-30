@@ -1,43 +1,16 @@
 #cloud-config
 autoinstall:
-  refresh-installer:
-    update: true
-    channel: latest/stable
-  apt:
-    disable_components: []
-    fallback: abort
-    geoip: false
-    mirror-selection:
-      primary:
-        - country-mirror
-        - arches: &id001
-            - amd64
-            - i386
-          uri: http://archive.ubuntu.com/ubuntu/
-        - arches: &id002
-            - s390x
-            - arm64
-            - armhf
-            - powerpc
-            - ppc64el
-            - riscv64
-          uri: http://ports.ubuntu.com/ubuntu-ports
-    preserve_sources_list: false
-    security:
-      - arches: *id001
-        uri: http://security.ubuntu.com/ubuntu/
-      - arches: *id002
-        uri: http://ports.ubuntu.com/ubuntu-ports
-  codecs:
-    install: true
-  drivers:
-    install: true
-  kernel:
-    package: linux-generic-hwe-24.04
+  version: 1
+  identity:
+    realname: "Salazar Slytherin"
+    hostname: "sslytherin"
+    username: "IB-SSLYTHERIN-L"
+    password: "$6$jMIpAD1dGkm6sqfJ$HF6uWZp3lbYMjyI3jWUE1j51R9sqCkX8tjrp3xut2AWs3r2Ou9JGyZu1Xr7D3VF3B4X2gYCfjQatKoxAbDGSu0"
+  locale: en_US.UTF-8
+  timezone: Europe/Sarajevo
   keyboard:
     layout: us
     variant: ''
-  locale: en_US.UTF-8
   network:
     version: 2
     ethernets:
@@ -45,14 +18,6 @@ autoinstall:
         match:
           name: "en*"
         dhcp4: true
-      eth1:
-        match:
-          name: "eth*"
-        dhcp4: true
-  oem:
-    install: auto
-  source:
-    id: ubuntu-desktop-minimal
   storage:
     layout:
       name: lvm
@@ -63,12 +28,6 @@ autoinstall:
       size: 4G
     grub:
       reorder_uefi: False
-  identity:
-    realname: "Salazar Slytherin"
-    hostname: "sslytherin"
-    username: "IB-SSLYTHERIN-L"
-    password: "$6$jMIpAD1dGkm6sqfJ$HF6uWZp3lbYMjyI3jWUE1j51R9sqCkX8tjrp3xut2AWs3r2Ou9JGyZu1Xr7D3VF3B4X2gYCfjQatKoxAbDGSu0"
-  timezone: Europe/Sarajevo
   updates: security
   late-commands:
     - curtin in-target --target=/target -- apt-get update
@@ -81,9 +40,8 @@ autoinstall:
   runcmd:
     - sudo bash /home/sslytherin/scripts/setup_user.sh
     - touch /home/sslytherin/setup_done.flag
-  version: 1
 
-# Ensure enroll.sh runs only after reboot if setup_user.sh was completed.
+# Use /etc/rc.local for running enroll.sh after reboot
 write_files:
   - path: /etc/rc.local
     content: |
@@ -94,4 +52,3 @@ write_files:
       fi
       exit 0
     permissions: '0755'
-
