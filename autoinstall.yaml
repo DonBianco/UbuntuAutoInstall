@@ -74,48 +74,24 @@ autoinstall:
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get install -y wget
     - curtin in-target --target=/target -- mkdir -p /home/sslytherin/scripts
-    - curtin in-target --target=/target -- tee /home/sslytherin/scripts/setup_user.sh > /dev/null <<EOF
-      #!/bin/bash
-      echo "================================="
-      echo " Autoinstall USER Configuration!"
-      echo "================================="
-      
-      # Traži od korisnika unos podataka
-      # Request user input for full name, username, and hostname
-      read -p "Enter user full name for example Salazar Slytherin: " FULLNAME
-      read -p "Enter username for example sslytherin: " USERNAME
-      read -p "Enter hostname please use Infobip standardization for example IB-SSLYTHERIN-L: " HOSTNAME
-      
-      # Postavlja hostname
-      # Set the system hostname
-      echo "\$HOSTNAME" > /etc/hostname
-      hostnamectl set-hostname "\$HOSTNAME"
-      
-      # Kreira novog korisnika
-      # Create the new user
-      adduser --gecos "\$FULLNAME" --disabled-password "\$USERNAME"
-      echo "\$USERNAME ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers.d/\$USERNAME
-      
-      # Postavljanje lozinke za novog korisnika
-      # Set password for the new user
-      echo "\$USERNAME:Ovojetest12!" | chpasswd
-      
-      # Premješta tempuser folder u novog korisnika
-      # Move tempuser folder to the new user
-      mv /home/tempuser /home/\$USERNAME
-      chown -R \$USERNAME:\$USERNAME /home/\$USERNAME
-      
-      # Postavljanje lozinke za tempuser
-      # Set password for the tempuser
-      echo "tempuser:Ovojetest12!" | chpasswd
-      
-      # Restart sistema da primijeni promjene
-      # Reboot the system to apply changes
-      echo "Setup completed, rebooting system Ciao!..."
-      sleep 3
-      reboot
-      EOF
+    - curtin in-target --target=/target -- wget -O /home/sslytherin/scripts/setup_user.sh https://github.com/DonBianco/UbuntuAutoInstall/raw/main/setup_user.sh
+    - curtin in-target --target=/target -- wget -O /home/sslytherin/scripts/enroll.sh https://github.com/DonBianco/UbuntuAutoInstall/raw/main/enroll.sh
     - curtin in-target --target=/target -- chmod +x /home/sslytherin/scripts/setup_user.sh
+    - curtin in-target --target=/target -- chmod +x /home/sslytherin/scripts/enroll.sh
   runcmd:
     - sudo bash /home/sslytherin/scripts/setup_user.sh
+    - touch /home/sslytherin/setup_done.flag
   version: 1
+
+# Ensure enroll.sh runs only after reboot if setup_user.sh was completed.
+write_files:
+  - path: /etc/rc.local
+    content: |
+      #!/bin/bash
+      if [ -f /home/sslytherin/setup_done.flag ]; then
+        sudo bash /home/sslytherin/scripts/enroll.sh
+        rm -f /home/sslytherin/setup_done.flag
+      fi
+      exit 0
+    permissions: '0755'
+
