@@ -2,53 +2,28 @@
 autoinstall:
   version: 1
   identity:
-    realname: "Salazar Slytherin"
-    hostname: "sslytherin"
-    username: "IB-SSLYTHERIN-L"
-    password: "$6$jMIpAD1dGkm6sqfJ$HF6uWZp3lbYMjyI3jWUE1j51R9sqCkX8tjrp3xut2AWs3r2Ou9JGyZu1Xr7D3VF3B4X2gYCfjQatKoxAbDGSu0"
-  locale: en_US.UTF-8
-  timezone: Europe/Sarajevo
-  keyboard:
-    layout: us
-    variant: ''
-  network:
-    version: 2
-    ethernets:
-      ens33:
-        match:
-          name: "en*"
-        dhcp4: true
+    hostname: IB-SSLYTHERIN-L
+    username: sslytherin
+    password: "$6$rounds=4096$bsWjDZ7..F2$.ZJ2gqCUxNl3ap1eEwq3OZC5FKh3xOsyYtWZ21LCwMXb46UpW8eIZpUw=="
   storage:
     layout:
       name: lvm
-      sizing-policy: all
+      policy: all
       encryption: luks
       password: "301097"
     swap:
-      size: 4G
+      size: 16G
     grub:
       reorder_uefi: False
-  updates: security
+  early-commands: []
   late-commands:
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get install -y wget
-    - curtin in-target --target=/target -- mkdir -p /home/sslytherin/scripts
-    - curtin in-target --target=/target -- wget -O /home/sslytherin/scripts/setup_user.sh https://github.com/DonBianco/UbuntuAutoInstall/raw/main/setup_user.sh
-    - curtin in-target --target=/target -- wget -O /home/sslytherin/scripts/enroll.sh https://github.com/DonBianco/UbuntuAutoInstall/raw/main/enroll.sh
-    - curtin in-target --target=/target -- chmod +x /home/sslytherin/scripts/setup_user.sh
-    - curtin in-target --target=/target -- chmod +x /home/sslytherin/scripts/enroll.sh
+    - curtin in-target --target=/target -- mkdir -p /home/sslytherin
+    - curtin in-target --target=/target -- wget -O /home/sslytherin/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
+    - curtin in-target --target=/target -- chmod +x /home/sslytherin/enroll.sh
   runcmd:
-    - sudo bash /home/sslytherin/scripts/setup_user.sh
-    - touch /home/sslytherin/setup_done.flag
-
-# Use /etc/rc.local for running enroll.sh after reboot
-write_files:
-  - path: /etc/rc.local
-    content: |
-      #!/bin/bash
-      if [ -f /home/sslytherin/setup_done.flag ]; then
-        sudo bash /home/sslytherin/scripts/enroll.sh
-        rm -f /home/sslytherin/setup_done.flag
-      fi
-      exit 0
-    permissions: '0755'
+    - curtin in-target --target=/target -- apt-get update
+    - curtin in-target --target=/target -- apt-get upgrade -y
+    - curtin in-target --target=/target -- apt-get install -y linux-firmware
+    - curtin in-target --target=/target -- bash /home/sslytherin/enroll.sh
