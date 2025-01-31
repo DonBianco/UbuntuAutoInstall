@@ -27,7 +27,7 @@ autoinstall:
     - curtin in-target --target=/target -- chmod +x /home/sslytherin/enroll.sh
 
   runcmd:
-    - curtin in-target --target=/target -- apt-get update
-    - curtin in-target --target=/target -- apt-get upgrade -y
-    - curtin in-target --target=/target -- apt-get install -y linux-firmware
-    - curtin in-target --target=/target -- bash /home/sslytherin/enroll.sh
+    - sudo apt-get update
+    - sudo apt-get upgrade -y
+    - sudo apt-get install -y linux-firmware
+    - sudo bash /home/sslytherin/enroll.sh
