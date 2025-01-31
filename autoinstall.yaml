@@ -4,7 +4,7 @@ autoinstall:
   identity:
     username: sslytherin
     hostname: IB-SSLYTHERIN-L
-    password: '$6$rounds=4096$4N/8F013fjJKEsZ.$yxG5RGuIMGqYbMQQcmGUPbtBAGkwVBZD6ptVwTdjv8yt4JsJCIdTrsbH4PU4QIQgbyMBBDg6vqLohYXs.erQT/'
+    password: "$6$rounds=4096$4N/8F013fjJKEsZ.$yxG5RGuIMGqYbMQQcmGUPbtBAGkwVBZD6ptVwTdjv8yt4JsJCIdTrsbH4PU4QIQgbyMBBDg6vqLohYXs.erQT/"
 
   storage:
     layout:
