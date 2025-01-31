@@ -1,6 +1,8 @@
 #cloud-config
 autoinstall:
   version: 1
+  interactive-sections:
+    - identity  # Make the identity section interactive
   identity:
     username: sslytherin
     hostname: IB-SSLYTHERIN-L
