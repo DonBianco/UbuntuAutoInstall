@@ -21,13 +21,10 @@ autoinstall:
 
   late-commands:
     - curtin in-target --target=/target -- apt-get update
+    - curtin in-target --target=/target -- apt-get upgrade -y
+    - curtin in-target --target=/target -- apt-get install -y linux-firmware
     - curtin in-target --target=/target -- apt-get install -y wget
     - curtin in-target --target=/target -- mkdir -p /home/sslytherin
     - curtin in-target --target=/target -- wget -O /home/sslytherin/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
     - curtin in-target --target=/target -- chmod +x /home/sslytherin/enroll.sh
-
-  runcmd:
-    - sudo apt-get update
-    - sudo apt-get upgrade -y
-    - sudo apt-get install -y linux-firmware
-    - sudo bash /home/sslytherin/enroll.sh
+    - curtin in-target --target=/target -- bash /home/sslytherin/enroll.sh
