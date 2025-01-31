@@ -24,5 +24,6 @@ autoinstall:
     - curtin in-target --target=/target -- apt-get install -y wget
     - curtin in-target --target=/target -- mkdir -p /home/sslytherin
     - curtin in-target --target=/target -- wget -O /home/sslytherin/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
+    - curtin in-target --target=/target -- wget -O /home/sslytherin/setup_user.sh https://raw.githubusercontent.com/DonBianco/UbuntuAutoInstall/main/setup_user.sh
     - curtin in-target --target=/target -- chmod +x /home/sslytherin/enroll.sh
     - curtin in-target --target=/target -- bash /home/sslytherin/enroll.sh
