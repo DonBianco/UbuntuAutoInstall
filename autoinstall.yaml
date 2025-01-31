@@ -4,7 +4,6 @@ autoinstall:
   identity:
     hostname: IB-SSLYTHERIN-L
     username: sslytherin
-    password: "Ovojetest12"
   storage:
     layout:
       name: lvm
