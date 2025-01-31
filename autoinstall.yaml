@@ -3,7 +3,9 @@ autoinstall:
   version: 1
   identity:
     hostname: IB-SSLYTHERIN-L
-    username: sslytherin
+    user:
+      name: sslytherin
+      shell: /bin/bash
   storage:
     layout:
       name: lvm
