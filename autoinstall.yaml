@@ -6,7 +6,7 @@ autoinstall:
     username: sslytherin
     full_name: "Salazar Slytherin"
     shell: /bin/bash
-    password: '$y$j9T$HapMxfmu2xX2AMgEbZR9T1$h0xCaspeiSlMwgQqMsH/k7L9LPcfa8XN6rO4nsljDA0'
+    password: '$6$rounds=4096$4N/8F013fjJKEsZ.$yxG5RGuIMGqYbMQQcmGUPbtBAGkwVBZD6ptVwTdjv8yt4JsJCIdTrsbH4PU4QIQgbyMBBDg6vqLohYXs.erQT/'
 
   storage:
     layout:
