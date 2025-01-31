@@ -3,9 +3,11 @@ autoinstall:
   version: 1
   identity:
     hostname: IB-SSLYTHERIN-L
-    user:
-      name: sslytherin
-      shell: /bin/bash
+    username: sslytherin
+    full_name: "Salazar Slytherin"
+    shell: /bin/bash
+    password: '$y$j9T$HapMxfmu2xX2AMgEbZR9T1$h0xCaspeiSlMwgQqMsH/k7L9LPcfa8XN6rO4nsljDA0'
+
   storage:
     layout:
       name: lvm
@@ -16,13 +18,16 @@ autoinstall:
       size: 16G
     grub:
       reorder_uefi: False
+
   early-commands: []
+
   late-commands:
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get install -y wget
     - curtin in-target --target=/target -- mkdir -p /home/sslytherin
     - curtin in-target --target=/target -- wget -O /home/sslytherin/enroll.sh https://landscape.infobip.com/static/deploy/enroll.sh
     - curtin in-target --target=/target -- chmod +x /home/sslytherin/enroll.sh
+
   runcmd:
     - curtin in-target --target=/target -- apt-get update
     - curtin in-target --target=/target -- apt-get upgrade -y
