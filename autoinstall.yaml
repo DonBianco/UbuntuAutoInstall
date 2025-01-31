@@ -2,10 +2,8 @@
 autoinstall:
   version: 1
   identity:
-    hostname: IB-SSLYTHERIN-L
     username: sslytherin
-    full_name: "Salazar Slytherin"
-    shell: /bin/bash
+    hostname: IB-SSLYTHERIN-L
     password: '$6$rounds=4096$4N/8F013fjJKEsZ.$yxG5RGuIMGqYbMQQcmGUPbtBAGkwVBZD6ptVwTdjv8yt4JsJCIdTrsbH4PU4QIQgbyMBBDg6vqLohYXs.erQT/'
 
   storage:
