@@ -1,39 +1,37 @@
 #!/bin/bash
-echo "================================="
-echo " Autoinstall USER Configuration!"
-echo "================================="
 
-# Traži od korisnika unos podataka
-# Request user input for full name, username, and hostname
-read -p "Enter user full name for example Salazar Slytherin: " FULLNAME
-read -p "Enter username for example sslytherin: " USERNAME
-read -p "Enter hostname please use Infobip standardization for example IB-SSLYTHERIN-L: " HOSTNAME
+set -e  # Exit on error
 
-# Postavlja hostname
-# Set the system hostname
-echo "\$HOSTNAME" > /etc/hostname
-hostnamectl set-hostname "\$HOSTNAME"
+# Function to check if running as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root." >&2
+    exit 1
+fi
 
-# Kreira novog korisnika
-# Create the new user
-adduser --gecos "\$FULLNAME" --disabled-password "\$USERNAME"
-echo "\$USERNAME ALL=(ALL) NOPASSWD:ALL" | tee -a /etc/sudoers.d/\$USERNAME
+# Prompt user for new values
+read -p "Please enter new hostname: " new_hostname
+read -p "Please enter new username: " new_username
+read -p "Please enter full name: " new_fullname
 
-# Postavljanje lozinke za novog korisnika
-# Set password for the new user
-echo "\$USERNAME:Ovojetest12!" | chpasswd
+# Get current username and hostname
+old_username=$(whoami)
+old_hostname=$(hostname)
 
-# Premješta tempuser folder u novog korisnika
-# Move tempuser folder to the new user
-mv /home/tempuser /home/\$USERNAME
-chown -R \$USERNAME:\$USERNAME /home/\$USERNAME
+echo "Changing hostname from $old_hostname to $new_hostname..."
+echo "$new_hostname" > /etc/hostname
+hostnamectl set-hostname "$new_hostname"
+sed -i "s/^127.0.1.1.*/127.0.1.1    $new_hostname/g" /etc/hosts
 
-# Postavljanje lozinke za tempuser
-# Set password for the tempuser
-echo "tempuser:Ovojetest12!" | chpasswd
+# Change full name
+usermod -c "$new_fullname" "$old_username"
 
-# Restart sistema da primijeni promjene
-# Reboot the system to apply changes
-echo "Setup completed, rebooting system Ciao!..."
+echo "Changing username from $old_username to $new_username..."
+if [[ "$old_username" != "$new_username" ]]; then
+    usermod -l "$new_username" "$old_username"
+    usermod -d "/home/$new_username" -m "$new_username"
+fi
+
+# Inform the user
+echo "All changes applied successfully. Rebooting now..."
 sleep 3
 reboot
